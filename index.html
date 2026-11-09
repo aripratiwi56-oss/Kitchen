@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Cooking Lab: Recipe, Procedural Text & Prepositions (Kelas 5 SD)</title>
+    <style>
+        /* --- RESET & LAYOUT CONTAINER (FIXED 16:9 ASPECT RATIO) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Fredoka', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 16:9 Aspect Ratio Viewport Container */
+        #app-viewport {
+            width: 100vw;
+            height: 56.25vw; /* 16:9 aspect ratio */
+            max-height: 100vh;
+            max-width: 177.78vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 40%, #0d9488 100%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        .splash-badge {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 0.5rem 1.4rem;
+            border-radius: 9999px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .splash-title {
+            font-size: 2.3rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        .splash-subtitle {
+            font-size: 1.15rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+            max-width: 650px;
+            font-weight: 500;
+        }
+
+        .progress-box {
+            width: 320px;
+            background: rgba(0, 0, 0, 0.3);
+            height: 18px;
+            border-radius: 9px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 9px;
+            transition: width 0.2s ease;
+        }
+
+        .splash-btn {
+            background: #10b981;
+            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 800;
+            padding: 0.85rem 2.8rem;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4);
+            transition: transform 0.2s, background 0.2s;
+            display: none;
+        }
+
+        .splash-btn:hover {
+            transform: translateY(-3px) scale(1.04);
+            background: #059669;
+        }
+
+        /* --- HEADER & NAVIGATION --- */
+        header {
+            height: 60px;
+            background: #1e293b;
+            border-bottom: 2px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.25rem;
+            color: white;
+            z-index: 10;
+        }
+
+        .app-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .app-brand-icon {
+            width: 38px;
+            height: 38px;
+            background: #f59e0b;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .app-title-text {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #f8fafc;
+        }
+
+        .app-sub-text {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        nav {
+            display: flex;
+            gap: 0.4rem;
+            background: #0f172a;
+            padding: 0.3rem;
+            border-radius: 10px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 0.5rem 0.9rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-btn:hover {
+            color: #f8fafc;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-btn.active {
+            background: #f59e0b;
+            color: #0f172a;
+            box-shadow: 0 4px 8px rgba(245, 158, 11, 0.4);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: #334155;
+            border: none;
+            color: #f8fafc;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: #475569;
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        main {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #0f172a;
+        }
+
+        .tab-content {
+            position: absolute;
+            inset: 0;
+            padding: 1.2rem;
+            display: none;
+            overflow-y: auto;
+            color: #f8fafc;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Custom Scrollbar */
+        .tab-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .tab-content::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .tab-content::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        /* --- TAB 1: TEORI --- */
+        .teori-section-title {
+            font-size: 1.05rem;
+            color: #38bdf8;
+            font-weight: 800;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .vocab-card {
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            padding: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .vocab-card:hover {
+            transform: translateY(-2px);
+            border-color: #f59e0b;
+        }
+
+        .vocab-icon {
+            font-size: 1.8rem;
+        }
+
+        .vocab-info h4 {
+            font-size: 0.9rem;
+            color: #f8fafc;
+        }
+
+        .vocab-info p {
+            font-size: 0.72rem;
+            color: #94a3b8;
+        }
+
+        .theory-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.85rem;
+        }
+
+        .info-card {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 0.85rem;
+            border-left: 5px solid #f59e0b;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .info-card.teal { border-left-color: #14b8a6; }
+        .info-card.purple { border-left-color: #a855f7; }
+        .info-card.blue { border-left-color: #0284c7; }
+
+        .info-header {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-body {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            line-height: 1.35;
+        }
+
+        .prep-diagram-box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.4rem;
+            margin-top: 0.4rem;
+        }
+
+        .prep-item {
+            background: #0f172a;
+            padding: 0.4rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        .prep-item strong { color: #f59e0b; display: block; }
+
+        /* --- TAB 2: PROSEDUR --- */
+        .procedure-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .step-card {
+            background: #1e293b;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid #334155;
+        }
+
+        .step-num {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #0f172a;
+            font-weight: 800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .step-info h4 {
+            font-size: 0.95rem;
+            color: #f8fafc;
+            margin-bottom: 0.2rem;
+        }
+
+        .step-info p {
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+
+        /* --- TAB 3: SIMULASI --- */
+        .sim-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            height: 100%;
+            position: relative;
+        }
+
+        .sim-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+
+        .sim-mode-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .mode-btn {
+            background: #0f172a;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background: #f59e0b;
+            color: #0f172a;
+            border-color: #f59e0b;
+        }
+
+        .sim-score-box {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #10b981;
+            background: #0f172a;
+            padding: 0.35rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+
+        /* MODE A: PREPOSITION LAB */
+        .sim-area-prep {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 0.85rem;
+            flex: 1;
+        }
+
+        .utensils-pool-box {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 0.75rem;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .pool-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .utensils-pool-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            overflow-y: auto;
+            max-height: 240px;
+        }
+
+        .drag-tool {
+            background: #334155;
+            border: 2px solid #475569;
+            border-radius: 8px;
+            padding: 0.5rem 0.6rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .drag-tool:hover {
+            border-color: #f59e0b;
+            background: #d97706;
+            color: white;
+        }
+
+        .kitchen-stage {
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .task-banner {
+            background: #0f172a;
+            border: 2px solid #38bdf8;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #f8fafc;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .kitchen-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .slot-target {
+            background: #0f172a;
+            border: 2px dashed #475569;
+            border-radius: 10px;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            transition: background 0.2s, border-color 0.2s;
+            text-align: center;
+        }
+
+        .slot-target.drag-over {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .slot-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .slot-placed-item {
+            background: #10b981;
+            color: white;
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* MODE B: RECIPE SIMULATOR */
+        .sim-area-recipe {
+            display: none;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid #334155;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .recipe-title-bar {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #f59e0b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .recipe-steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .recipe-step-row {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+        }
+
+        .step-order-badge {
+            background: #334155;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+        }
+
+        .step-move-btns {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .btn-mini {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-mini:hover { background: #0284c7; }
+
+        .sim-feedback-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #38bdf8;
+            padding: 0.65rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .sim-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .reset-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .reset-btn:hover { background: #dc2626; }
+
+        /* --- TAB 4: LKPD --- */
+        .lkpd-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.2rem;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .lkpd-header {
+            border-bottom: 2px dashed #334155;
+            padding-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lkpd-inputs {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .lkpd-field {
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: white;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .lkpd-q-box {
+            background: #0f172a;
+            padding: 0.85rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            border: 1px solid #334155;
+            transition: border-color 0.2s;
+        }
+
+        .lkpd-q-box.correct { border-color: #10b981; background: rgba(16, 185, 129, 0.05); }
+        .lkpd-q-box.incorrect { border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
+
+        .lkpd-q-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .lkpd-options {
+            display: flex;
+            gap: 0.8rem;
+            font-size: 0.82rem;
+            margin-top: 0.2rem;
+            flex-wrap: wrap;
+        }
+
+        .lkpd-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+        }
+
+        .lkpd-text-input {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #f59e0b;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            width: 200px;
+        }
+
+        .lkpd-explanation {
+            font-size: 0.78rem;
+            margin-top: 0.3rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            display: none;
+            line-height: 1.35;
+        }
+
+        .lkpd-explanation.show-correct {
+            display: block;
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .lkpd-explanation.show-incorrect {
+            display: block;
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+        }
+
+        .grade-badge {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            display: none;
+        }
+
+        /* --- TAB 5: PENGEMBANG --- */
+        .dev-card {
+            max-width: 750px;
+            margin: 0 auto;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #334155;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .dev-avatar {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #f59e0b, #0284c7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .dev-details h3 {
+            font-size: 1.3rem;
+            color: #f59e0b;
+            margin-bottom: 0.2rem;
+        }
+
+        .dev-details p {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        .cp-box {
+            margin-top: 0.6rem;
+            background: #0f172a;
+            padding: 0.60rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            border-left: 3px solid #f59e0b;
+        }
+
+        /* --- TOAST NOTIFICATION --- */
+        #toast {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 0.65rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 50;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive UI Adjustment */
+        @media (max-width: 768px) {
+            .vocab-grid { grid-template-columns: repeat(2, 1fr); }
+            .theory-grid-2 { grid-template-columns: 1fr; }
+            .sim-area-prep { grid-template-columns: 1fr; }
+            .dev-card { flex-direction: column; text-align: center; }
+            .splash-title { font-size: 1.6rem; }
+            .splash-subtitle { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MAIN VIEWPORT CONTAINER (16:9 FIXED ASPECT RATIO) -->
+    <div id="app-viewport">
+        
+        <!-- SPLASH SCREEN -->
+        <div id="splash-screen">
+            <div class="splash-badge">VIRTUAL LAB BAHASA INGGRIS SD - FASE C</div>
+            <h1 class="splash-title">Fun Cooking Lab 🍳🍳</h1>
+            <p class="splash-subtitle">Recipes, Procedural Texts, Kitchen Utensils & Prepositions of Place!</p>
+            
+            <div class="progress-box" id="progress-box">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <button class="splash-btn" id="start-btn">🍳 Mulai Lab Maya</button>
+        </div>
+
+        <!-- HEADER & NAVIGATION -->
+        <header>
+            <div class="app-brand">
+                <div class="app-brand-icon">🍳</div>
+                <div>
+                    <div class="app-title-text">Fun Cooking Lab</div>
+                    <div class="app-sub-text">Grade 5 SD • English Procedural & Utensils</div>
+                </div>
+            </div>
+
+            <nav>
+                <button class="nav-btn active" data-tab="teori">📚 Teori</button>
+                <button class="nav-btn" data-tab="prosedur">📋 Prosedur</button>
+                <button class="nav-btn" data-tab="simulasi">🎮 Simulasi</button>
+                <button class="nav-btn" data-tab="lkpd">📝 LKPD</button>
+                <button class="nav-btn" data-tab="pengembang">👤 Pengembang</button>
+            </nav>
+
+            <div class="header-actions">
+                <button class="icon-btn" id="sound-toggle" title="Toggle Efek Suara">🔊</button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main>
+
+            <!-- TAB 1: TEORI -->
+            <div class="tab-content active" id="tab-teori">
+                <div class="teori-section-title">🍳 Kitchen Utensils (Klik ikon untuk pengucapan Bahasa Inggris!)</div>
+                <div class="vocab-grid">
+                    <div class="vocab-card" onclick="speakWord('Frying Pan')">
+                        <div class="vocab-icon">🍳</div>
+                        <div class="vocab-info">
+                            <h4>Frying Pan</h4>
+                            <p>Wajan penggorengan</p>
+                        </div>
+                    </div>
+                    <div class="vocab-card" onclick="speakWord('Cooking Pot')">
+                        <div class="vocab-icon">🍲</div>
+                        <div class="vocab-info">
+                            <h4>Cooking Pot</h4>
+                            <p>Panci masak</p>
+                        </div>
+                    </div>
+                    <div class="vocab-card" onclick="speakWord('Chef Knife')">
+                        <div class="vocab-icon">🔪</div>
+                        <div class="vocab-info">
+                            <h4>Knife</h4>
+                            <p>Pisau pemotong</p>
+                        </div>
+                    </div>
+                    <div class="vocab-card" onclick="speakWord('Mixing Bowl')">
+                        <div class="vocab-icon">🥣</div>
+                        <div class="vocab-info">
+                            <h4>Bowl</h4>
+                            <p>Mangkok aduk</p>
+                        </div>
+                    </div>
+                    <div class="vocab-card" onclick="speakWord('Spoon')">
+                        <div class="vocab-icon">🥄</div>
+                        <div class="vocab-info">
+                            <h4>Spoon</h4>
+                            <p>Sendok makan</p>
+                        </div>
+                    </div>
+                    <div class="vocab-card" onclick="speakWord('Spatula')">
+                        <div class="vocab-icon">🪜</div>
+                        <div class="vocab-info">
+                            <h4>Spatula</h4>
+                            <p>Sodetan / Spatula</p>
+                        </div>
+                    </div>
+                    <div class="vocab-card" onclick="speakWord('Cutting Board')">
+                        <div class="vocab-icon">🪵</div>
+                        <div class="vocab-info">
+                            <h4>Cutting Board</h4>
+                            <p>Talenan</p>
+                        </div>
+                    </div>
+                    <div class="vocab-card" onclick="speakWord('Whisk')">
+                        <div class="vocab-icon">🍴</div>
+                        <div class="vocab-info">
+                            <h4>Whisk</h4>
+                            <p>Pengocok telur</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="theory-grid-2">
+                    <div class="info-card teal">
+                        <div class="info-header">
+                            <span>📍 Prepositions of Place</span>
+                            <span>Kata Depan Posisi</span>
+                        </div>
+                        <div class="info-body">
+                            Preposisi digunakan untuk menjelaskan letak/posisi alat dapur dan bahan makanan di area memasak:
+                        </div>
+                        <div class="prep-diagram-box">
+                            <div class="prep-item"><strong>ON</strong> Di atas</div>
+                            <div class="prep-item"><strong>IN</strong> Di dalam</div>
+                            <div class="prep-item"><strong>UNDER</strong> Di bawah</div>
+                            <div class="prep-item"><strong>NEXT TO</strong> Di sebelah</div>
+                            <div class="prep-item"><strong>BEHIND</strong> Di belakang</div>
+                            <div class="prep-item"><strong>IN FRONT OF</strong> Di depan</div>
+                        </div>
+                    </div>
+
+                    <div class="info-card purple">
+                        <div class="info-header">
+                            <span>📜 Procedural Text (Recipe)</span>
+                            <span>Struktur Resep</span>
+                        </div>
+                        <div class="info-body">
+                            Teks prosedur resep memiliki 3 bagian utama:
+                            <br>1. <strong>Goal/Title:</strong> Tujuan (Contoh: <em>How to Make Banana Smoothie</em>)
+                            <br>2. <strong>Ingredients & Utensils:</strong> Bahan & Peralatan
+                            <br>3. <strong>Steps / Action Verbs:</strong> Langkah memasak menggunakan kata kerja perintah:
+                            <br><span style="color:#f59e0b;">Chop (memotong), Mix (mengaduk), Pour (menuang), Boil (merebus), Fry (menggoreng).</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PROSEDUR -->
+            <div class="tab-content" id="tab-prosedur">
+                <div class="procedure-container">
+                    <div class="teori-section-title">📌 Panduan Penggunaan Lab Maya</div>
+                    
+                    <div class="step-card">
+                        <div class="step-num">1</div>
+                        <div class="step-info">
+                            <h4>Pelajari Alat Dapur & Preposisi Posisi</h4>
+                            <p>Buka tab <strong>Teori</strong>. Dengarkan cara pengucapan alat dapur (*Kitchen Utensils*) dan pahami penggunaan *Prepositions of Place* serta kata kerja resep (*Action Verbs*).</p>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-num">2</div>
+                        <div class="step-info">
+                            <h4>Mainkan Simulasi Mode 1: Kitchen Preposition Setup</h4>
+                            <p>Di tab <strong>Simulasi</strong>, geser (drag/tap) alat dapur ke posisi posisi yang diperintahkan kalimat (misal: *"Put the knife NEXT TO the board"*).</p>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-num">3</div>
+                        <div class="step-info">
+                            <h4>Mainkan Simulasi Mode 2: Procedural Recipe Order</h4>
+                            <p>Urutkan langkah-langkah memasak resep jus/salad buah agar menjadi teks prosedur yang runtut dan benar.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-num">4</div>
+                        <div class="step-info">
+                            <h4>Selesaikan 10 Soal Evaluasi di LKPD Digital</h4>
+                            <p>Buka tab <strong>LKPD</strong>, lengkapi nama dan kelas, jawab 10 variasi soal, lalu klik <strong>Kirim & Periksa Nilai</strong> untuk mendapatkan penilaian instan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: SIMULASI -->
+            <div class="tab-content" id="tab-simulasi">
+                <div class="sim-container">
+                    <div class="sim-header-bar">
+                        <div class="sim-mode-toggle">
+                            <button class="mode-btn active" id="btn-mode-a">Mode 1: Kitchen Preposition</button>
+                            <button class="mode-btn" id="btn-mode-b">Mode 2: Recipe Step Order</button>
+                        </div>
+                        <div class="sim-score-box">Skor: <span id="sim-score">0</span></div>
+                        <button class="reset-btn" id="sim-reset-btn">🔄 Reset</button>
+                    </div>
+
+                    <!-- MODE A: PREPOSITION LAB -->
+                    <div class="sim-area-prep" id="mode-a-area">
+                        <div class="utensils-pool-box">
+                            <div class="pool-title">🧰 Kitchen Utensils Rack</div>
+                            <div class="utensils-pool-grid" id="tools-pool">
+                                <!-- Dynamic tools generated here -->
+                            </div>
+                        </div>
+
+                        <div class="kitchen-stage">
+                            <div class="task-banner" id="prep-task-text">
+                                Perintah: Place the <strong>Knife 🔪</strong> <span style="color:#f59e0b;">NEXT TO</span> the cutting board!
+                            </div>
+
+                            <div class="kitchen-slots-grid">
+                                <div class="slot-target" data-pos="on_table">
+                                    <div class="slot-label">📌 ON the Table</div>
+                                    <div id="slot-on_table"></div>
+                                </div>
+                                <div class="slot-target" data-pos="next_to_board">
+                                    <div class="slot-label">📌 NEXT TO the Board</div>
+                                    <div id="slot-next_to_board"></div>
+                                </div>
+                                <div class="slot-target" data-pos="in_bowl">
+                                    <div class="slot-label">📌 IN the Bowl</div>
+                                    <div id="slot-in_bowl"></div>
+                                </div>
+                                <div class="slot-target" data-pos="under_shelf">
+                                    <div class="slot-label">📌 UNDER the Shelf</div>
+                                    <div id="slot-under_shelf"></div>
+                                </div>
+                                <div class="slot-target" data-pos="behind_pot">
+                                    <div class="slot-label">📌 BEHIND the Pot</div>
+                                    <div id="slot-behind_pot"></div>
+                                </div>
+                                <div class="slot-target" data-pos="in_front_pan">
+                                    <div class="slot-label">📌 IN FRONT OF the Pan</div>
+                                    <div id="slot-in_front_pan"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODE B: RECIPE SIMULATOR -->
+                    <div class="sim-area-recipe" id="mode-b-area">
+                        <div class="recipe-title-bar">
+                            <span>🥭 Recipe: How to Make Fresh Mango Juice</span>
+                            <button class="opt-btn" id="check-recipe-btn" style="background:#10b981; color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; cursor:pointer; font-weight:bold;">Periksa Urutan Resep</button>
+                        </div>
+
+                        <div class="recipe-steps-container" id="recipe-list">
+                            <!-- Dynamic interactive step rows -->
+                        </div>
+
+                        <div class="sim-feedback-box" id="recipe-feedback">
+                            💡 Gunakan tombol ⬆️ dan ⬇️ untuk menyusun urutan teks prosedur yang tepat (dari langkah pertama sampai disajikan).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: LKPD -->
+            <div class="tab-content" id="tab-lkpd">
+                <div class="lkpd-container">
+                    <div class="lkpd-header">
+                        <div>
+                            <h3 style="color: #f59e0b;">Digital LKPD: Procedural Text & Prepositions</h3>
+                            <p style="font-size: 0.8rem; color: #94a3b8;">Lembar Kerja Peserta Didik (10 Variasi Soal Bahasa Inggris Kelas 5 SD)</p>
+                        </div>
+                        <div class="grade-badge" id="grade-badge">Nilai: 0 / 100</div>
+                    </div>
+
+                    <div class="lkpd-inputs">
+                        <input type="text" id="student-name" class="lkpd-field" placeholder="Nama Siswa..." />
+                        <input type="text" id="student-class" class="lkpd-field" placeholder="Kelas..." />
+                    </div>
+
+                    <!-- Q1: Utensil Identification -->
+                    <div class="lkpd-q-box" id="box-q1">
+                        <div class="lkpd-q-title">1. We use a _______ to fry eggs and sausage in the kitchen. 🍳</div>
+                        <div class="lkpd-options">
+                            <label><input type="radio" name="q1" value="frying pan"> frying pan</label>
+                            <label><input type="radio" name="q1" value="mixing bowl"> mixing bowl</label>
+                            <label><input type="radio" name="q1" value="spoon"> spoon</label>
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q1"></div>
+                    </div>
+
+                    <!-- Q2: Preposition Context -->
+                    <div class="lkpd-q-box" id="box-q2">
+                        <div class="lkpd-q-title">2. Look at the picture! The soup spoon is _______ the bowl. 🥣🥄</div>
+                        <div class="lkpd-options">
+                            <label><input type="radio" name="q2" value="in"> in</label>
+                            <label><input type="radio" name="q2" value="under"> under</label>
+                            <label><input type="radio" name="q2" value="behind"> behind</label>
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q2"></div>
+                    </div>
+
+                    <!-- Q3: Action Verb Recognition -->
+                    <div class="lkpd-q-box" id="box-q3">
+                        <div class="lkpd-q-title">3. Before making fruit salad, we need to _______ the apples into small pieces. 🔪🍎</div>
+                        <div class="lkpd-options">
+                            <label><input type="radio" name="q3" value="chop"> chop</label>
+                            <label><input type="radio" name="q3" value="boil"> boil</label>
+                            <label><input type="radio" name="q3" value="bake"> bake</label>
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q3"></div>
+                    </div>
+
+                    <!-- Q4: Fill in Blank - Preposition -->
+                    <div class="lkpd-q-box" id="box-q4">
+                        <div class="lkpd-q-title">4. Ketik kata preposisi yang tepat (in / on / under / next to):<br><em>"Put the heavy cooking pot _______ the stove table."</em> 🍲</div>
+                        <div style="margin-top: 0.3rem;">
+                            <input type="text" id="ans-q4" class="lkpd-text-input" placeholder="Jawaban..." />
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q4"></div>
+                    </div>
+
+                    <!-- Q5: Fill in Blank - Utensil Vocab -->
+                    <div class="lkpd-q-box" id="box-q5">
+                        <div class="lkpd-q-title">5. Ketik nama alat dapur dalam Bahasa Inggris:<br><em>"We chop vegetables on top of a cutting _______."</em> 🪵</div>
+                        <div style="margin-top: 0.3rem;">
+                            <input type="text" id="ans-q5" class="lkpd-text-input" placeholder="Jawaban (board)..." />
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q5"></div>
+                    </div>
+
+                    <!-- Q6: Sequence Step -->
+                    <div class="lkpd-q-box" id="box-q6">
+                        <div class="lkpd-q-title">6. What is usually the FIRST step in a recipe procedural text? 📜</div>
+                        <div class="lkpd-options">
+                            <label><input type="radio" name="q6" value="Wash and prepare the ingredients"> Wash and prepare the ingredients</label>
+                            <label><input type="radio" name="q6" value="Serve on a plate"> Serve on a plate</label>
+                            <label><input type="radio" name="q6" value="Eat with friends"> Eat with friends</label>
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q6"></div>
+                    </div>
+
+                    <!-- Q7: True / False Structure -->
+                    <div class="lkpd-q-box" id="box-q7">
+                        <div class="lkpd-q-title">7. True or False: Procedural texts use imperative verbs like <em>"Mix", "Pour", "Stir"</em>.</div>
+                        <div class="lkpd-options">
+                            <label><input type="radio" name="q7" value="True"> True (Benar)</label>
+                            <label><input type="radio" name="q7" value="False"> False (Salah)</label>
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q7"></div>
+                    </div>
+
+                    <!-- Q8: Tool vs Ingredient classification -->
+                    <div class="lkpd-q-box" id="box-q8">
+                        <div class="lkpd-q-title">8. Which item below is a kitchen UTENSIL (tool), NOT an ingredient? 🛠️</div>
+                        <div class="lkpd-options">
+                            <label><input type="radio" name="q8" value="Spatula"> Spatula</label>
+                            <label><input type="radio" name="q8" value="Sugar"> Sugar</label>
+                            <label><input type="radio" name="q8" value="Mango"> Mango</label>
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q8"></div>
+                    </div>
+
+                    <!-- Q9: Preposition diagram context -->
+                    <div class="lkpd-q-box" id="box-q9">
+                        <div class="lkpd-q-title">9. The pan is located _______ the stove and the sink. 🎛️🍳🚰</div>
+                        <div class="lkpd-options">
+                            <label><input type="radio" name="q9" value="between"> between</label>
+                            <label><input type="radio" name="q9" value="under"> under</label>
+                            <label><input type="radio" name="q9" value="inside"> inside</label>
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q9"></div>
+                    </div>
+
+                    <!-- Q10: Procedural Text Goal -->
+                    <div class="lkpd-q-box" id="box-q10">
+                        <div class="lkpd-q-title">10. Title: <em>"How to Make Fresh Orange Juice"</em>. What is the GOAL of this text? 🧃</div>
+                        <div class="lkpd-options">
+                            <label><input type="radio" name="q10" value="To tell how to make orange juice"> To tell how to make orange juice</label>
+                            <label><input type="radio" name="q10" value="To list different types of fruits"> To list different types of fruits</label>
+                            <label><input type="radio" name="q10" value="To sell oranges in the market"> To sell oranges in the market</label>
+                        </div>
+                        <div class="lkpd-explanation" id="exp-q10"></div>
+                    </div>
+
+                    <div class="sim-controls">
+                        <button class="reset-btn" id="reset-lkpd-btn">🔄 Reset LKPD</button>
+                        <button class="btn-primary" id="submit-lkpd-btn" style="background: #10b981; color: white; border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Kirim & Periksa Nilai</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: PENGEMBANG -->
+            <div class="tab-content" id="tab-pengembang">
+                <div class="dev-card">
+                    <div class="dev-avatar">👨‍🍳</div>
+                    <div class="dev-details">
+                        <h3>Pengembang Lab Maya Bahasa Inggris</h3>
+                        <p><strong>Mata Pelajaran:</strong> Bahasa Inggris (Elementary School)</p>
+                        <p><strong>Materi:</strong> Recipe, Procedural Text, Prepositions & Kitchen Utensils</p>
+                        <p><strong>Fase/Kelas:</strong> Fase C / Kelas 5 SD</p>
+                        <div class="cp-box">
+                            <strong>Capaian Pembelajaran (CP):</strong> Peserta didik dapat memahami dan merespons instruksi teks prosedur resep sederhana, mengidentifikasi kosakata peralatan dapur (*kitchen utensils*), serta mengaplikasikan kata depan posisi (*prepositions of place*) dalam konteks komunikasi sehari-hari secara akurat.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast">Message</div>
+
+    <!-- SOUND SYNTHESIZER & SCRIPT LOGIC -->
+    <script>
+        /* --- OFFLINE WEB AUDIO SYNTHESIZER --- */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            playClick() {
+                if (!this.enabled) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(280, this.ctx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.05);
+            }
+
+            playSuccess() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+
+            playError() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            }
+        }
+
+        const sound = new SoundEngine();
+
+        /* --- SPEECH SYNTHESIS FOR VOCABULARY --- */
+        function speakWord(text) {
+            sound.playClick();
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        /* --- SPLASH SCREEN LOADING --- */
+        window.addEventListener('load', () => {
+            const progressBar = document.getElementById('progress-bar');
+            const startBtn = document.getElementById('start-btn');
+            const progressBox = document.getElementById('progress-box');
+
+            let progress = 0;
+            const timer = setInterval(() => {
+                progress += 25;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = progress + '%';
+
+                if (progress === 100) {
+                    clearInterval(timer);
+                    setTimeout(() => {
+                        progressBox.style.display = 'none';
+                        startBtn.style.display = 'inline-block';
+                    }, 300);
+                }
+            }, 100);
+        });
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            sound.playSuccess();
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => { splash.style.visibility = 'hidden'; }, 500);
+        });
+
+        // Sound Toggle
+        const soundBtn = document.getElementById('sound-toggle');
+        soundBtn.addEventListener('click', () => {
+            sound.enabled = !sound.enabled;
+            soundBtn.textContent = sound.enabled ? '🔊' : '🔇';
+            showToast(sound.enabled ? 'Suara Aktif' : 'Suara Diheningkan');
+        });
+
+        /* --- NAVIGATION LOGIC --- */
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sound.playClick();
+                const targetTab = btn.getAttribute('data-tab');
+
+                navButtons.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(`tab-${targetTab}`).classList.add('active');
+            });
+        });
+
+        /* --- SIMULATION LOGIC --- */
+        let score = 0;
+
+        // MODE A PREPOSITION SIMULATOR DATA
+        const prepTasks = [
+            { tool: 'Knife 🔪', targetPos: 'next_to_board', desc: 'Place the Knife NEXT TO the cutting board!' },
+            { tool: 'Spoon 🥄', targetPos: 'in_bowl', desc: 'Put the Spoon IN the bowl!' },
+            { tool: 'Frying Pan 🍳', targetPos: 'in_front_pan', desc: 'Move the Frying Pan IN FRONT OF the stove rack!' },
+            { tool: 'Cooking Pot 🍲', targetPos: 'on_table', desc: 'Put the Cooking Pot ON the table!' },
+            { tool: 'Whisk 🍴', targetPos: 'under_shelf', desc: 'Store the Whisk UNDER the shelf!' }
+        ];
+
+        let currentTaskIdx = 0;
+
+        function initModeA() {
+            const pool = document.getElementById('tools-pool');
+            pool.innerHTML = '';
+            
+            // Clear slots
+            document.querySelectorAll('.slot-target div[id^="slot-"]').forEach(s => s.innerHTML = '');
+
+            const task = prepTasks[currentTaskIdx];
+            document.getElementById('prep-task-text').innerHTML = `Perintah: <strong>${task.desc}</strong>`;
+
+            prepTasks.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'drag-tool';
+                card.draggable = true;
+                card.textContent = item.tool;
+                card.setAttribute('data-target', item.targetPos);
+
+                card.addEventListener('dragstart', (e) => {
+                    sound.playClick();
+                    e.dataTransfer.setData('text/plain', JSON.stringify(item));
+                });
+
+                pool.appendChild(card);
+            });
+        }
+
+        document.querySelectorAll('.slot-target').forEach(slot => {
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                slot.classList.add('drag-over');
+            });
+
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('drag-over');
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.classList.remove('drag-over');
+                const item = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const slotPos = slot.getAttribute('data-pos');
+
+                if (item.targetPos === slotPos && item.tool.includes(prepTasks[currentTaskIdx].tool.split(' ')[0])) {
+                    sound.playSuccess();
+                    score += 20;
+                    showToast(`✅ Correct! You placed the ${item.tool} ${slotPos.replace('_', ' ')}.`);
+
+                    const placedElem = document.createElement('div');
+                    placedElem.className = 'slot-placed-item';
+                    placedElem.textContent = item.tool;
+                    slot.querySelector('div[id^="slot-"]').appendChild(placedElem);
+
+                    // Remove item from pool
+                    document.querySelectorAll('.drag-tool').forEach(el => {
+                        if (el.textContent === item.tool) el.remove();
+                    });
+
+                    // Next task
+                    currentTaskIdx = (currentTaskIdx + 1) % prepTasks.length;
+                    setTimeout(() => { initModeA(); }, 1500);
+                } else {
+                    sound.playError();
+                    showToast(`❌ Wrong spot! Pay attention to the preposition command.`);
+                }
+                document.getElementById('sim-score').textContent = score;
+            });
+        });
+
+        // MODE B RECIPE SIMULATOR DATA
+        let recipeSteps = [
+            { id: 3, text: 'Pour the blended mango juice into a clean glass.', correctOrder: 3 },
+            { id: 1, text: 'Peel the fresh mango and chop it into small pieces.', correctOrder: 1 },
+            { id: 4, text: 'Serve with ice cubes and enjoy your fresh juice!', correctOrder: 4 },
+            { id: 2, text: 'Put the chopped mango pieces and water into the blender.', correctOrder: 2 }
+        ];
+
+        function renderRecipeSteps() {
+            const container = document.getElementById('recipe-list');
+            container.innerHTML = '';
+
+            recipeSteps.forEach((step, idx) => {
+                const row = document.createElement('div');
+                cardRow = row;
+                row.className = 'recipe-step-row';
+                row.innerHTML = `
+                    <div class="step-order-badge">${idx + 1}</div>
+                    <div class="step-text">${step.text}</div>
+                    <div class="step-move-btns">
+                        <button class="btn-mini" onclick="moveRecipeStep(${idx}, -1)">⬆️ Up</button>
+                        <button class="btn-mini" onclick="moveRecipeStep(${idx}, 1)">⬇️ Down</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function moveRecipeStep(idx, direction) {
+            sound.playClick();
+            const newIdx = idx + direction;
+            if (newIdx < 0 || newIdx >= recipeSteps.length) return;
+
+            const temp = recipeSteps[idx];
+            recipeSteps[idx] = recipeSteps[newIdx];
+            recipeSteps[newIdx] = temp;
+            renderRecipeSteps();
+        }
+
+        document.getElementById('check-recipe-btn').addEventListener('click', () => {
+            let isCorrect = true;
+            recipeSteps.forEach((step, idx) => {
+                if (step.correctOrder !== idx + 1) isCorrect = false;
+            });
+
+            if (isCorrect) {
+                sound.playSuccess();
+                score += 30;
+                document.getElementById('sim-score').textContent = score;
+                document.getElementById('recipe-feedback').innerHTML = `🎉 <strong>Luar Biasa!</strong> Urutan langkah resep jus mangga sudah 100% Benar & Runtut!`;
+                showToast('🎉 Resep Berhasil Disusun Runtut!');
+            } else {
+                sound.playError();
+                document.getElementById('recipe-feedback').innerHTML = `❌ <strong>Masih belum tepat!</strong> Perhatikan kata kerja perintahnya: Peel/Chop ➔ Blend ➔ Pour ➔ Serve.`;
+                showToast('❌ Periksa kembali urutan resep!');
+            }
+        });
+
+        // MODE TOGGLES
+        document.getElementById('btn-mode-a').addEventListener('click', () => {
+            sound.playClick();
+            document.getElementById('btn-mode-a').classList.add('active');
+            document.getElementById('btn-mode-b').classList.remove('active');
+            document.getElementById('mode-a-area').style.display = 'grid';
+            document.getElementById('mode-b-area').style.display = 'none';
+        });
+
+        document.getElementById('btn-mode-b').addEventListener('click', () => {
+            sound.playClick();
+            document.getElementById('btn-mode-b').classList.add('active');
+            document.getElementById('btn-mode-a').classList.remove('active');
+            document.getElementById('mode-a-area').style.display = 'none';
+            document.getElementById('mode-b-area').style.display = 'flex';
+            renderRecipeSteps();
+        });
+
+        document.getElementById('sim-reset-btn').addEventListener('click', () => {
+            sound.playClick();
+            score = 0;
+            currentTaskIdx = 0;
+            document.getElementById('sim-score').textContent = score;
+            initModeA();
+            renderRecipeSteps();
+            showToast('Simulasi Di-reset');
+        });
+
+        initModeA();
+
+        /* --- LKPD EVALUATION LOGIC (10 QUESTIONS) --- */
+        const lkpdAnswers = {
+            q1: { ans: 'frying pan', exp: 'Frying pan (wajan) digunakan untuk menggoreng telur dan sosis.' },
+            q2: { ans: 'in', exp: 'Preposisi "in" digunakan karena sendok berada di dalam mangkok (in the bowl).' },
+            q3: { ans: 'chop', exp: '"Chop" berarti memotong buah menjadi potongan kecil.' },
+            q4: { ans: 'on', exp: 'Benda berat seperti panci diletakkan di atas (on) meja kompor.' },
+            q5: { ans: 'board', exp: 'Nama alat talenan adalah "cutting board".' },
+            q6: { ans: 'Wash and prepare the ingredients', exp: 'Langkah awal resep selalu diawali dengan mencuci dan menyiapkan bahan.' },
+            q7: { ans: 'True', exp: 'Teks prosedur resep wajib menggunakan kata kerja perintah (imperative verbs).' },
+            q8: { ans: 'Spatula', exp: 'Spatula adalah peralatan dapur (utensil), sedangkan Sugar dan Mango adalah bahan.' },
+            q9: { ans: 'between', exp: '"Between" digunakan untuk menjelaskan posisi di antara dua benda.' },
+            q10: { ans: 'To tell how to make orange juice', exp: 'Goal / Tujuan teks prosedur resep selalu menjelaskan cara membuat makanan/minuman tersebut.' }
+        };
+
+        document.getElementById('submit-lkpd-btn').addEventListener('click', () => {
+            const name = document.getElementById('student-name').value.trim();
+            const cls = document.getElementById('student-class').value.trim();
+
+            if (!name || !cls) {
+                sound.playError();
+                showToast('⚠️ Isi Nama dan Kelas Terlebih Dahulu!');
+                return;
+            }
+
+            let correctCount = 0;
+
+            for (let i = 1; i <= 10; i++) {
+                const qKey = `q${i}`;
+                let userAns = '';
+
+                if (i === 4 || i === 5) {
+                    userAns = document.getElementById(`ans-${qKey}`).value.trim().toLowerCase();
+                } else {
+                    userAns = document.querySelector(`input[name="${qKey}"]:checked`)?.value;
+                }
+
+                const box = document.getElementById(`box-${qKey}`);
+                const exp = document.getElementById(`exp-${qKey}`);
+                const answerData = lkpdAnswers[qKey];
+
+                box.classList.remove('correct', 'incorrect');
+                exp.classList.remove('show-correct', 'show-incorrect');
+
+                if (userAns === answerData.ans) {
+                    correctCount++;
+                    box.classList.add('correct');
+                    exp.classList.add('show-correct');
+                    exp.innerHTML = `✅ <strong>Jawaban Benar!</strong> ${answerData.exp}`;
+                } else {
+                    box.classList.add('incorrect');
+                    exp.classList.add('show-incorrect');
+                    exp.innerHTML = `❌ <strong>Salah!</strong> Jawaban benar: <strong>${answerData.ans}</strong>. ${answerData.exp}`;
+                }
+            }
+
+            const finalGrade = correctCount * 10;
+            sound.playSuccess();
+            const badge = document.getElementById('grade-badge');
+            badge.style.display = 'inline-block';
+            badge.textContent = `Nilai: ${finalGrade} / 100 (${correctCount}/10 Benar)`;
+            showToast(`✅ LKPD Selesai! Nilai Kamu: ${finalGrade}`);
+        });
+
+        document.getElementById('reset-lkpd-btn').addEventListener('click', () => {
+            sound.playClick();
+            document.querySelectorAll('.lkpd-q-box').forEach(box => {
+                box.classList.remove('correct', 'incorrect');
+            });
+            document.querySelectorAll('.lkpd-explanation').forEach(exp => {
+                exp.classList.remove('show-correct', 'show-incorrect');
+                exp.innerHTML = '';
+            });
+            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+            document.getElementById('ans-q4').value = '';
+            document.getElementById('ans-q5').value = '';
+            document.getElementById('grade-badge').style.display = 'none';
+            showToast('LKPD Berhasil Di-reset');
+        });
+
+        /* --- TOAST HELPER --- */
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2600);
+        }
+    </script>
+</body>
+</html>
